@@ -1,0 +1,110 @@
+Name: Adam Jones
+UCLA ID: 904-443-264
+
+Collaborators:
+
+-------------------------------------------------------------------------------
+
+Response to Exercise 1:
+
+The name of the scheduling algorithm is: Cooperative Scheduling that mimics 
+Round Robin, assuming processes behave nicely and call sys_yield(). There are
+no clock interrupts in this scheduling algorithm. It is not preemptive, like
+Round Robin, but instead is cooperative and depends on processes yielding control
+back to the kernel so that the scheduler can run and chose the next process.
+
+
+(Exercise 2 is a coding exercise)
+
+
+Response to Exercise 3:
+
+turnaround time = completion time - arrival time
+wait time = start time - arrival time
+
+I'm assuming here that the arrival time for all processes is 0, since they are
+all loaded into memory in the start() function of schedos-kern.c
+
+Average turnaround time for scheduling_algorithm 0:
+
+1: 1277ms - 0ms = 1277ms
+2: 1278ms - 0ms = 1278ms
+3: 1279ms - 0ms = 1279ms
+4: 1280ms - 0ms = 1280ms
+
+(1277ms + 1278ms + 1279ms + 1280ms) / 4 = 1278.5ms
+
+Average turnaround time for scheduling_algorithm 1:
+
+1: 320ms - 0ms = 320ms
+2: 640ms - 0ms = 640ms
+3: 960ms - 0ms = 960ms
+4: 1280ms - 0ms = 1280ms
+
+(320ms + 640ms + 960ms + 1280ms) / 4 = 800ms
+
+Average wait time for scheduling_algorithm 0:
+
+1: 0ms - 0ms = 0ms
+2: 1ms - 0ms = 1ms
+3: 2ms - 0ms = 2ms
+4: 3ms - 0ms = 3ms
+
+(0ms + 1ms + 2ms + 3ms) / 4 = 1.5ms
+
+Average wait time for scheduling_algorithm 1:
+
+1: 0ms - 0ms = 0ms
+2: 320ms - 0ms = 320ms
+3: 640ms - 0ms = 640ms
+4: 960ms - 0ms = 960ms
+
+(0ms + 320ms + 640ms + 960ms) / 4 = 480ms
+
+
+Exercise 4:
+
+Did you complete Exercise 4A, Exercise 4B, or both for extra credit?
+
+Both
+
+
+Exercise 5:
+
+The first known timer interrupt occured during process 4. This is because
+the first number that doesn't get printed out is a 4, meaning that process
+4's time quantum expired before it was able to update the screen and cursor
+position with its new character. We know that it is not process 3, since even
+if the time quantum expired for process three after it printed out a 3,
+scheduling_algorithm 0 means that the next call to sys_yield() will switch to
+process 4 anyways. Therefore, the clock interrupt must have occured at the
+beginning of process 4.
+
+
+(Exercise 6 is a coding exercise)
+
+
+Anything else you'd like us to know:
+
+
+
+Extra credit exercises:
+
+Exercise 7: I implemented lottery scheduling for extra credit. I first added
+a p_tickets field to the process structure described in schedos-kern.h. These
+values are initially set in the start() method of schedos-kern.c, but they can
+be changed within each process by using the syscall sys_ticket(). My scheduling
+algorithm first adds up the total amount of tickets currently held by all
+processes. Next, I generated a random number using Marsaglia's method, located at
+http://mathoverflow.net/questions/29494/pseudo-random-number-generation-algorithms
+I then used this random number to pick a number between 1 and the total number
+of tickets, and ran the process that held that region of tickets. If a process has
+more tickets relative to the other processes, then it has a higher percentage of
+being chosen to run at any given call of schedule().
+
+
+Exercise 8: I implemented atomic locking and unlocking. This required adding a field
+to schedos.h, as well as specifying where to store this variable in schedos-symbols.ld.
+I then used the atomic_swap() function in x86sync.h to implement a simple mutex, and
+wrapped the critical section in a lock and unlock. There are preprocessor macros in
+schedos-1.c that allow for either Exercise 8 or 6 to be run.
